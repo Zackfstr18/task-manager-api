@@ -1,0 +1,43 @@
+############################
+# 🧱 .NET / ASP.NET Core
+############################
+bin/
+obj/
+out/
+
+############################
+# 🧪 Logs
+############################
+*.log
+
+############################
+# 🔐 User Secrets & Config
+############################
+appsettings.Development.json
+appsettings.Local.json
+secrets.json
+
+############################
+# 🧠 Visual Studio
+############################
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+############################
+# 🧠 Visual Studio Code
+############################
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+############################
+# 🧪 Test Results
+############################
+TestResults/
+
+##################

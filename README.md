@@ -29,7 +29,7 @@ facilitando su gestión desde cualquier cliente que consuma la API.
 | PUT | /api/tasks/{id}/complete | Marca una tarea como completada |
 | DELETE | /api/tasks/{id} | Elimina una tarea |
 
-##Cómo ejecutar el proyecto
+## Cómo ejecutar el proyecto
 
 1. Clonar el repositorio
 2. Abrir el proyecto en Visual Studio

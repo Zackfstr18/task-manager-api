@@ -37,5 +37,35 @@ namespace TaskManagerAPI.Controllers
 
             return Ok(task);
         }
+
+        [HttpPut("{id}/complete")]
+        public IActionResult CompleteTask(int id)
+        {
+            var task = tasks.FirstOrDefault(t => t.Id == id);
+
+            if (task == null)
+            {
+                return NotFound("Tarea no encontrada");
+            }
+
+            task.IsCompleted = true;
+
+            return Ok(task);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteTask(int id)
+        {
+            var task = tasks.FirstOrDefault(t => t.Id == id);
+
+            if (task == null)
+            {
+                return NotFound("Tarea no encontrada");
+            }
+
+            tasks.Remove(task);
+
+            return NoContent();
+        }
     }
 }

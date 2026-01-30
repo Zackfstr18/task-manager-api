@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskManagerAPI.Models;
+using TaskManagerAPI.Services;
 
 namespace TaskManagerAPI.Controllers
 {
@@ -8,62 +9,49 @@ namespace TaskManagerAPI.Controllers
     public class TaskController : ControllerBase
     {
         #region Definitions
-        private static List<TaskItem> tasks = new List<TaskItem>();
+        public TaskService _service  = new TaskService();
         #endregion
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(tasks);
+            return Ok(_service.GetAll());
         }
 
         [HttpPost]
         public IActionResult Create(TaskItem task)
         {
-            task.Id = tasks.Count + 1;
-            tasks.Add(task);
-
-            return Ok(task);
+            _service.Create(task);
+           return CreatedAtAction(nameof(_service.GetByID), new { id = task.Id }, task);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetByID(int id) 
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
-
-            if (task == null) 
-            {
-                return NotFound("Tarea no Encontrada");
-            }
-
-            return Ok(task);
+            return Ok(_service.GetByID(id));
         }
 
         [HttpPut("{id}/complete")]
         public IActionResult CompleteTask(int id)
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
+           var result = _service.CompleteTask(id);
 
-            if (task == null)
+            if (!result)
             {
                 return NotFound("Tarea no encontrada");
             }
 
-            task.IsCompleted = true;
-
-            return Ok(task);
+            return Ok(_service.GetByID(id));
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteTask(int id)
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
+            var result = _service.DeleteTask(id);
 
-            if (task == null)
+            if (!result)
             {
                 return NotFound("Tarea no encontrada");
             }
-
-            tasks.Remove(task);
 
             return NoContent();
         }

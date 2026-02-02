@@ -1,11 +1,12 @@
 # Task Manager API
 
-Esta es una API REST desarrollada con ASP.NET Core (.NET 8) para gestionar tareas personales.
-Permite crear, consultar, actualizar y eliminar tareas.
+API REST desarrollada con ASP.NET Core (.NET 8) para la gestión de tareas.
+Permite crear, consultar, actualizar y eliminar tareas, utilizando persistencia real en base de datos.
 
 ## ¿Qué problema resuelve?
 Este proyecto permite llevar un control simple de tareas pendientes,
-facilitando su gestión desde cualquier cliente que consuma la API.
+facilitando su gestión desde cualquier cliente que consuma la API,
+manteniendo los datos incluso después de reiniciar la aplicación.
 
 ## Funciones principales
 - Listar todas las tareas
@@ -15,8 +16,9 @@ facilitando su gestión desde cualquier cliente que consuma la API.
 - Eliminar una tarea
 
 ## Tecnologías
-- ASP.NET Core Web API
-- .NET 8
+- ASP.NET Core Web API (.NET 8)
+- Entity Framework Core
+- SQLite
 - Swagger / OpenAPI
 
 ## Endpoints disponibles
@@ -29,24 +31,38 @@ facilitando su gestión desde cualquier cliente que consuma la API.
 | PUT | /api/tasks/{id}/complete | Marca una tarea como completada |
 | DELETE | /api/tasks/{id} | Elimina una tarea |
 
+## Flujo básico del proyecto
+1. El cliente realiza una petición HTTP
+2. El Controller recibe la solicitud
+3. El Service ejecuta la lógica de negocio
+4. El DbContext interactúa con la base de datos
+5. Se devuelve una respuesta HTTP adecuada
+
 ## Cómo ejecutar el proyecto
 
 1. Clonar el repositorio
 2. Abrir el proyecto en Visual Studio
-3. Ejecutar la aplicación
-4. Usar Swagger para probar los endpoints
+3. Restaurar dependencias
+4. Ejecutar la aplicación
+5. Usar Swagger para probar los endpoints
 
 ## Aprendizajes
+- Arquitectura básica de una API REST
+- Uso de Controllers, Services y Models
+- Entity Framework Core y DbContext
+- Uso de SQLite como base de datos
+- Migraciones y persistencia de datos
+- Inyección de dependencias (Scoped)
+- Uso correcto de async / await
+- Manejo de respuestas HTTP (200, 201, 204, 404)
 
-- Funcionamiento básico de una API REST
-- Uso de Controllers y Models en ASP.NET Core
-- Manejo de peticiones HTTP (GET, POST, PUT, DELETE)
-- Manejo de respuestas correctas (200, 204, 404)
-- Flujo completo de una API backend
+## Estado actual del proyecto
+- CRUD completo
+- Persistencia con SQLite
+- Migraciones aplicadas
+- Swagger operativo
 
 ## Mejoras futuras pendientes
-
-- Persistencia con base de datos
 - Autenticación y usuarios
 - Validaciones más avanzadas
 - Deploy en la nube

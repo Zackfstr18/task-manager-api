@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TaskManagerAPI.Data;
 using TaskManagerAPI.Models;
 
 namespace TaskManagerAPI.Services
@@ -6,44 +8,48 @@ namespace TaskManagerAPI.Services
     public class TaskService
     {
         #region Definitions
-        private static readonly List<TaskItem> tasks = new();
+        private readonly AppDbContext _context;
         #endregion
 
-        public List<TaskItem> GetAll() => tasks;
-
-        public TaskItem? GetByID(int id) => tasks.FirstOrDefault(t => t.Id == id);
-
-        public TaskItem Create(TaskItem task)
+        public TaskService(AppDbContext context)
         {
-            task.Id = tasks.Count + 1;
-            task.IsCompleted = false;
-            tasks.Add(task);
+            _context = context;
+        }
+        public async Task<List<TaskItem>> GetAllAsync()
+        {
+            return await _context.Tasks.ToListAsync();
+        }
+
+        public async Task<TaskItem?> GetByIdAsync(int id)
+        {
+            return await _context.Tasks.FindAsync(id);
+        }
+
+        public async Task<TaskItem> CreateAsync(TaskItem task)
+        {
+            _context.Tasks.Add(task);
+            await _context.SaveChangesAsync();
             return task;
+        }
 
-        }      
-
-        public bool CompleteTask(int id)
+        public async Task<bool> CompleteAsync(int id)
         {
-            var task = GetByID(id);
-            if(task == null)
-            {
-                return false;
-            }
+            var task = await GetByIdAsync(id);
+            if (task == null) return false;
 
             task.IsCompleted = true;
+            await _context.SaveChangesAsync();
             return true;
         }
 
-        public bool DeleteTask(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            var task = GetByID(id);
-            if (task == null)
-            {
-                return false;
-            }
-            tasks.Remove(task);
+            var task = await GetByIdAsync(id);
+            if (task == null) return false;
+
+            _context.Tasks.Remove(task);
+            await _context.SaveChangesAsync();
             return true;
-            
         }
     }
 }

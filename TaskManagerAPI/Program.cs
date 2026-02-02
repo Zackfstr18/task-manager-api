@@ -1,7 +1,8 @@
 using TaskManagerAPI.Services;
+using Microsoft.EntityFrameworkCore;
+using TaskManagerAPI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -9,7 +10,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<TaskService>();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("TasksDB")
+        )
+    );
+
+builder.Services.AddScoped<TaskService>();
 
 var app = builder.Build();
 

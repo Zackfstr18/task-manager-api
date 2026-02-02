@@ -9,49 +9,62 @@ namespace TaskManagerAPI.Controllers
     public class TaskController : ControllerBase
     {
         #region Definitions
-        public TaskService _service  = new TaskService();
+        public TaskService _service ;
+
+        public TaskController(TaskService service) 
+        {
+            _service = service;
+        }
         #endregion
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_service.GetAll());
+            var tasks = await _service.GetAllAsync();
+            return Ok(tasks);
         }
 
         [HttpPost]
-        public IActionResult Create(TaskItem task)
+        public async Task<IActionResult> Create(TaskItem task)
         {
-            _service.Create(task);
-           return CreatedAtAction(nameof(_service.GetByID), new { id = task.Id }, task);
+            var createdTask = await _service.CreateAsync(task);
+
+            return CreatedAtAction(
+                nameof(GetByID),
+                new { id = createdTask.Id },
+                createdTask
+            );
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetByID(int id) 
+        public async Task<IActionResult> GetByID(int id) 
         {
-            return Ok(_service.GetByID(id));
+            var task = await _service.GetByIdAsync(id);
+
+            if (task == null)
+                return NotFound("Tarea no encontrada");
+
+            return Ok(task);
         }
 
         [HttpPut("{id}/complete")]
-        public IActionResult CompleteTask(int id)
+        public async Task<IActionResult> CompleteTask(int id)
         {
-           var result = _service.CompleteTask(id);
+            var success = await _service.CompleteAsync(id);
 
-            if (!result)
-            {
+            if (!success)
                 return NotFound("Tarea no encontrada");
-            }
 
-            return Ok(_service.GetByID(id));
+            var updatedTask = await _service.GetByIdAsync(id);
+            return Ok(updatedTask);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteTask(int id)
+        public async Task<IActionResult> DeleteTask(int id)
         {
-            var result = _service.DeleteTask(id);
+            var success = await _service.DeleteAsync(id);
 
-            if (!result)
-            {
+            if (!success)
                 return NotFound("Tarea no encontrada");
-            }
 
             return NoContent();
         }

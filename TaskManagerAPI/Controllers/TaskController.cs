@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskManagerAPI.Models;
+using TaskManagerAPI.Services;
 
 namespace TaskManagerAPI.Controllers
 {
@@ -8,62 +9,62 @@ namespace TaskManagerAPI.Controllers
     public class TaskController : ControllerBase
     {
         #region Definitions
-        private static List<TaskItem> tasks = new List<TaskItem>();
+        public TaskService _service ;
+
+        public TaskController(TaskService service) 
+        {
+            _service = service;
+        }
         #endregion
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
+            var tasks = await _service.GetAllAsync();
             return Ok(tasks);
         }
 
         [HttpPost]
-        public IActionResult Create(TaskItem task)
+        public async Task<IActionResult> Create(TaskItem task)
         {
-            task.Id = tasks.Count + 1;
-            tasks.Add(task);
+            var createdTask = await _service.CreateAsync(task);
 
-            return Ok(task);
+            return CreatedAtAction(
+                nameof(GetByID),
+                new { id = createdTask.Id },
+                createdTask
+            );
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetByID(int id) 
+        public async Task<IActionResult> GetByID(int id) 
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
+            var task = await _service.GetByIdAsync(id);
 
-            if (task == null) 
-            {
-                return NotFound("Tarea no Encontrada");
-            }
+            if (task == null)
+                return NotFound("Tarea no encontrada");
 
             return Ok(task);
         }
 
         [HttpPut("{id}/complete")]
-        public IActionResult CompleteTask(int id)
+        public async Task<IActionResult> CompleteTask(int id)
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
+            var success = await _service.CompleteAsync(id);
 
-            if (task == null)
-            {
+            if (!success)
                 return NotFound("Tarea no encontrada");
-            }
 
-            task.IsCompleted = true;
-
-            return Ok(task);
+            var updatedTask = await _service.GetByIdAsync(id);
+            return Ok(updatedTask);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteTask(int id)
+        public async Task<IActionResult> DeleteTask(int id)
         {
-            var task = tasks.FirstOrDefault(t => t.Id == id);
+            var success = await _service.DeleteAsync(id);
 
-            if (task == null)
-            {
+            if (!success)
                 return NotFound("Tarea no encontrada");
-            }
-
-            tasks.Remove(task);
 
             return NoContent();
         }

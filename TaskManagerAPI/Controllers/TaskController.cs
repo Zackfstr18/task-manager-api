@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskManagerAPI.DTOs;
 using TaskManagerAPI.Models;
 using TaskManagerAPI.Services;
 
@@ -24,8 +25,15 @@ namespace TaskManagerAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(TaskItem task)
+        public async Task<IActionResult> Create(CreateTaskDto dto)
         {
+            var task = new TaskItem
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                IsCompleted = false
+            };
+
             var createdTask = await _service.CreateAsync(task);
 
             return CreatedAtAction(

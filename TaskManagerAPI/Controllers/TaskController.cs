@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskManagerAPI.DTOs;
+using TaskManagerAPI.Mappings;
 using TaskManagerAPI.Models;
 using TaskManagerAPI.Services;
 
@@ -20,18 +22,27 @@ namespace TaskManagerAPI.Controllers
         public async Task<IActionResult> GetAll()
         {
             var tasks = await _service.GetAllAsync();
+
+            var response = tasks.Select(t => t.toDto());
             return Ok(tasks);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(TaskItem task)
+        public async Task<IActionResult> Create(CreateTaskDto dto)
         {
+            var task = new TaskItem
+            {
+                Title = dto.Title,
+                Description = dto.Description,
+                IsCompleted = false
+            };
+
             var createdTask = await _service.CreateAsync(task);
 
             return CreatedAtAction(
                 nameof(GetByID),
                 new { id = createdTask.Id },
-                createdTask
+                createdTask.toDto()
             );
         }
 
@@ -43,7 +54,7 @@ namespace TaskManagerAPI.Controllers
             if (task == null)
                 return NotFound("Tarea no encontrada");
 
-            return Ok(task);
+            return Ok(task.toDto());
         }
 
         [HttpPut("{id}/complete")]
@@ -55,7 +66,7 @@ namespace TaskManagerAPI.Controllers
                 return NotFound("Tarea no encontrada");
 
             var updatedTask = await _service.GetByIdAsync(id);
-            return Ok(updatedTask);
+            return Ok(updatedTask?.toDto());
         }
 
         [HttpDelete("{id}")]

@@ -1,25 +1,54 @@
 # Task Manager API
 
-API REST desarrollada con ASP.NET Core (.NET 8) para la gestión de tareas.
-Permite crear, consultar, actualizar y eliminar tareas, utilizando persistencia real en base de datos.
+API REST desarrollada con **ASP.NET Core (.NET 8)** para la gestión de tareas.  
+Permite crear, consultar, actualizar y eliminar tareas utilizando persistencia real en base de datos, DTOs y validaciones de entrada.
+
+---
 
 ## ¿Qué problema resuelve?
-Este proyecto permite llevar un control simple de tareas pendientes,
-facilitando su gestión desde cualquier cliente que consuma la API,
+Este proyecto permite llevar un control simple de tareas pendientes,  
+facilitando su gestión desde cualquier cliente que consuma la API,  
 manteniendo los datos incluso después de reiniciar la aplicación.
+
+---
 
 ## Funciones principales
 - Listar todas las tareas
-- Ver una tarea por ID
-- Crear una tarea
+- Obtener una tarea por ID
+- Crear una tarea con validaciones
 - Marcar una tarea como completada
 - Eliminar una tarea
+
+---
 
 ## Tecnologías
 - ASP.NET Core Web API (.NET 8)
 - Entity Framework Core
 - SQLite
 - Swagger / OpenAPI
+
+---
+
+## Visión general de la arquitectura
+El proyecto sigue una arquitectura simple y ordenada por capas:
+
+- **Controllers**: Manejan las peticiones y respuestas HTTP
+- **Services**: Contienen la lógica de negocio
+- **DTOs**: Definen el contrato de la API (entrada y salida)
+- **Models (Entidades)**: Representan la estructura de la base de datos
+- **DbContext**: Gestiona el acceso a datos mediante EF Core
+
+Las entidades **no se exponen directamente** a través de la API.
+
+---
+
+## Persistencia de datos
+- Se utiliza **SQLite** como base de datos local
+- Se gestiona mediante **Entity Framework Core**
+- La estructura de la base de datos se mantiene con **migraciones**
+- Los datos persisten aunque la API se reinicie
+
+---
 
 ## Endpoints disponibles
 
@@ -31,38 +60,60 @@ manteniendo los datos incluso después de reiniciar la aplicación.
 | PUT | /api/tasks/{id}/complete | Marca una tarea como completada |
 | DELETE | /api/tasks/{id} | Elimina una tarea |
 
-## Flujo básico del proyecto
+---
+
+## Modelo de solicitudes y respuestas
+- La API utiliza **DTOs** en lugar de exponer entidades directamente
+- Las entradas se validan mediante **Data Annotations**
+- Las solicitudes inválidas retornan **400 Bad Request** con mensajes claros
+- La creación exitosa retorna **201 Created** usando `CreatedAtAction`
+
+---
+
+## Flujo del proyecto
 1. El cliente realiza una petición HTTP
-2. El Controller recibe la solicitud
+2. El Controller recibe y valida el DTO
 3. El Service ejecuta la lógica de negocio
 4. El DbContext interactúa con la base de datos
-5. Se devuelve una respuesta HTTP adecuada
+5. La API devuelve una respuesta HTTP basada en DTOs
+
+---
 
 ## Cómo ejecutar el proyecto
-
 1. Clonar el repositorio
 2. Abrir el proyecto en Visual Studio
 3. Restaurar dependencias
 4. Ejecutar la aplicación
 5. Usar Swagger para probar los endpoints
 
+---
+
 ## Aprendizajes
-- Arquitectura básica de una API REST
-- Uso de Controllers, Services y Models
+- Arquitectura y buenas prácticas en APIs REST
+- Separación entre Controllers, Services y DTOs
 - Entity Framework Core y DbContext
-- Uso de SQLite como base de datos
+- Integración de SQLite como base de datos
 - Migraciones y persistencia de datos
 - Inyección de dependencias (Scoped)
 - Uso correcto de async / await
-- Manejo de respuestas HTTP (200, 201, 204, 404)
+- Validaciones de entrada y contratos de API
+- Manejo de respuestas HTTP (200, 201, 204, 400, 404)
+
+---
 
 ## Estado actual del proyecto
 - CRUD completo
 - Persistencia con SQLite
 - Migraciones aplicadas
-- Swagger operativo
+- DTOs de entrada y salida
+- Validaciones implementadas
+- Swagger completamente funcional
 
-## Mejoras futuras pendientes
-- Autenticación y usuarios
-- Validaciones más avanzadas
+---
+
+## Próximos pasos
+- Paginación, filtrado y ordenamiento
+- Autenticación y autorización
+- Logging y manejo global de errores
+- Pruebas unitarias
 - Deploy en la nube

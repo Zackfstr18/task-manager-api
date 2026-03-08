@@ -19,12 +19,22 @@ namespace TaskManagerAPI.Controllers
         }
         #endregion
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PaginationParams pagination)
         {
-            var tasks = await _service.GetAllAsync();
+            var (items, totalCount) = await _service.GetAllAsync(pagination);
 
-            var response = tasks.Select(t => t.toDto());
-            return Ok(tasks);
+            var dtoItems = items.Select(t => t.toDto());
+
+            var response = new PagedResponse<TaskResponseDto>
+            {
+                Items = dtoItems,
+                TotalCount = totalCount,
+                Page = pagination.Page,
+                PageSize = pagination.PageSize,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pagination.PageSize)
+            };
+
+            return Ok(response);
         }
 
         [HttpPost]

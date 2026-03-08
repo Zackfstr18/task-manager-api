@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagerAPI.Data;
+using TaskManagerAPI.DTOs;
 using TaskManagerAPI.Models;
 
 namespace TaskManagerAPI.Services
@@ -15,9 +16,53 @@ namespace TaskManagerAPI.Services
         {
             _context = context;
         }
-        public async Task<List<TaskItem>> GetAllAsync()
+        public async Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(PaginationParams pagination)
         {
-            return await _context.Tasks.ToListAsync();
+            var query = _context.Tasks.AsQueryable();
+
+            if (pagination.IsCompleted.HasValue)
+            {
+                query = query.Where(t => t.IsCompleted == pagination.IsCompleted.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(pagination.Search))
+            {
+                query = query.Where(t => t.Title.Contains(pagination.Search));
+            }
+
+            if (!string.IsNullOrWhiteSpace(pagination.SortBy))
+            {
+                query = pagination.SortBy.ToLower() switch
+                {
+                    "title" => pagination.Descending
+                        ? query.OrderByDescending(t => t.Title)
+                        : query.OrderBy(t => t.Title),
+
+                    "createdat" => pagination.Descending
+                        ? query.OrderByDescending(t => t.CreatedAt)
+                        : query.OrderBy(t => t.CreatedAt),
+
+                    "status" => pagination.Descending
+                        ? query.OrderByDescending(t => t.IsCompleted)
+                        : query.OrderBy(t => t.IsCompleted),
+
+                    _ => query.OrderBy(t => t.Id)
+                };
+            }
+            else
+            {
+                query = query.OrderBy(t => t.Id);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .Skip((pagination.Page - 1)* pagination.PageSize)
+                .Take(pagination.PageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+            
         }
 
         public async Task<TaskItem?> GetByIdAsync(int id)

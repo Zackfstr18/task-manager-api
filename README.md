@@ -18,7 +18,12 @@ manteniendo los datos incluso después de reiniciar la aplicación.
 - Crear una tarea con validaciones
 - Marcar una tarea como completada
 - Eliminar una tarea
-
+- Consultas avanzadas en el listado de tareas:
+  - Paginación
+  - Búsqueda por título
+  - Filtro por estado
+  - Ordenamiento dinámico
+  
 ---
 
 ## Tecnologías
@@ -54,11 +59,85 @@ Las entidades **no se exponen directamente** a través de la API.
 
 | Método | Ruta | Descripción |
 |------|------|-------------|
-| GET | /api/tasks | Obtiene todas las tareas |
+| GET | /api/tasks | Obtiene todas las tareas (soporta paginación, búsqueda, filtros y ordenamiento) |
 | GET | /api/tasks/{id} | Obtiene una tarea por ID |
 | POST | /api/tasks | Crea una nueva tarea |
 | PUT | /api/tasks/{id}/complete | Marca una tarea como completada |
 | DELETE | /api/tasks/{id} | Elimina una tarea |
+
+---
+
+## Consultas avanzadas
+
+El endpoint `GET /api/tasks` permite controlar los resultados mediante parámetros en la URL.
+
+### Paginación
+
+Permite dividir los resultados en páginas.
+
+GET /api/tasks?page=1&pageSize=10
+
+Parámetros:
+
+| Parámetro | Descripción |
+|----------|-------------|
+| page | Número de página |
+| pageSize | Cantidad de elementos por página |
+
+La API limita el tamaño máximo de página para evitar consultas excesivas.
+
+---
+
+### Búsqueda por título
+
+Permite buscar tareas por texto dentro del título.
+
+GET /api/tasks?search=api
+
+Devuelve todas las tareas cuyo título contenga el texto indicado.
+
+---
+
+### Filtro por estado
+
+Permite filtrar tareas completadas o pendientes.
+
+GET /api/tasks?isCompleted=true
+
+o
+
+GET /api/tasks?isCompleted=false
+
+---
+
+### Ordenamiento
+
+Permite ordenar los resultados dinámicamente.
+
+GET /api/tasks?sortBy=title
+
+Orden descendente:
+
+GET /api/tasks?sortBy=createdAt&descending=true
+
+Campos soportados actualmente:
+
+- title
+- createdAt
+- status
+
+---
+
+### Ejemplo de consulta completa
+
+GET /api/tasks?search=api&isCompleted=false&sortBy=createdAt&descending=true&page=2&pageSize=5
+
+Esta consulta:
+
+- busca tareas que contengan "api"
+- filtra tareas no completadas
+- ordena por fecha de creación descendente
+- devuelve la página 2 con 5 resultados
 
 ---
 
@@ -108,11 +187,11 @@ Las entidades **no se exponen directamente** a través de la API.
 - DTOs de entrada y salida
 - Validaciones implementadas
 - Swagger completamente funcional
+- Consultas avanzadas en endpoints (paginación, búsqueda, filtros y ordenamiento)
 
 ---
 
 ## Próximos pasos
-- Paginación, filtrado y ordenamiento
 - Autenticación y autorización
 - Logging y manejo global de errores
 - Pruebas unitarias

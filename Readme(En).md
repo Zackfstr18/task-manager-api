@@ -12,12 +12,17 @@ while keeping data persisted even after restarting the application.
 
 ---
 
-## Main features
+## Main Features
 - List all tasks
 - Get a task by ID
-- Create a task with validation
+- Create a task with validations
 - Mark a task as completed
 - Delete a task
+- Advanced query capabilities for task listing:
+  - Pagination
+  - Title search
+  - Status filtering
+  - Dynamic sorting
 
 ---
 
@@ -54,12 +59,85 @@ Entities are never exposed directly through the API.
 
 | Method | Route | Description |
 |------|------|-------------|
-| GET | /api/tasks | Gets all tasks |
+| GET | /api/tasks | Get all tasks (supports pagination, search, filtering and sorting) |
 | GET | /api/tasks/{id} | Gets a task by ID |
 | POST | /api/tasks | Creates a new task |
 | PUT | /api/tasks/{id}/complete | Marks a task as completed |
 | DELETE | /api/tasks/{id} | Deletes a task |
 
+---
+
+## Advanced Queries (Phase 6)
+
+The `GET /api/tasks` endpoint allows controlling the results using query parameters.
+
+### Pagination
+
+Split results into pages.
+
+GET /api/tasks?page=1&pageSize=10
+
+Parameters:
+
+| Parameter | Description |
+|----------|-------------|
+| page | Page number |
+| pageSize | Number of items per page |
+
+The API limits the maximum page size to prevent excessive queries.
+
+---
+
+### Title Search
+
+Allows searching tasks by text contained in the title.
+
+GET /api/tasks?search=api
+
+Returns tasks whose title contains the specified text.
+
+---
+
+### Status Filter
+
+Allows filtering completed or pending tasks.
+
+GET /api/tasks?isCompleted=true
+
+or
+
+GET /api/tasks?isCompleted=false
+
+---
+
+### Sorting
+
+Allows dynamically sorting the results.
+
+GET /api/tasks?sortBy=title
+
+Descending order:
+
+GET /api/tasks?sortBy=createdAt&descending=true
+
+Currently supported fields:
+
+- title
+- createdAt
+- status
+
+---
+
+### Full Query Example
+
+GET /api/tasks?search=api&isCompleted=false&sortBy=createdAt&descending=true&page=2&pageSize=5
+
+This query:
+
+- searches tasks containing "api"
+- filters incomplete tasks
+- sorts by creation date descending
+- returns page 2 with 5 results
 ---
 
 ## Request & response model
@@ -101,19 +179,19 @@ Entities are never exposed directly through the API.
 
 ---
 
-## Current project status
-- Full CRUD implemented
+## Current Project Status
+- Full CRUD
 - SQLite persistence
 - Migrations applied
-- DTOs for input and output
-- Input validation in place
+- Input and Output DTOs
+- Validations implemented
 - Swagger fully operational
+- Advanced query capabilities (pagination, search, filtering and sorting)
 
 ---
 
-## Next steps
-- Pagination, filtering, and sorting
+## Next Steps
 - Authentication and authorization
-- Logging and error handling
+- Logging and global error handling
 - Unit testing
 - Cloud deployment

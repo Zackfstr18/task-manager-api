@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TaskManagerAPI.DTOs;
+using System.Threading.Tasks;
 using TaskManagerAPI.Mappings;
 using TaskManagerAPI.Models;
+using TaskManagerAPI.Models.DTOs;
+using TaskManagerAPI.Models.Entities;
+using TaskManagerAPI.Models.Responses;
 using TaskManagerAPI.Services;
 
 namespace TaskManagerAPI.Controllers
@@ -52,7 +55,12 @@ namespace TaskManagerAPI.Controllers
             return CreatedAtAction(
                 nameof(GetByID),
                 new { id = createdTask.Id },
-                createdTask.toDto()
+                new ApiResponse<TaskItem>
+                {
+                    Success = true,
+                    Message = "Tarea creada correctamente",
+                    Data = createdTask
+                }
             );
         }
 
@@ -62,9 +70,20 @@ namespace TaskManagerAPI.Controllers
             var task = await _service.GetByIdAsync(id);
 
             if (task == null)
-                return NotFound("Tarea no encontrada");
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Tarea no encontrada"
+                });
+            }
 
-            return Ok(task.toDto());
+            return Ok(new ApiResponse<TaskItem>
+            {
+                Success = true,
+                Message = "Tarea obtenida correctamente",
+                Data = task
+            });
         }
 
         [HttpPut("{id}/complete")]
@@ -73,10 +92,21 @@ namespace TaskManagerAPI.Controllers
             var success = await _service.CompleteAsync(id);
 
             if (!success)
-                return NotFound("Tarea no encontrada");
+            {
+                return NotFound(new ApiResponse<object>
+                {
+                    Success = false,
+                    Message = "Error marcando tarea como completada."
+                });
+            }
 
             var updatedTask = await _service.GetByIdAsync(id);
-            return Ok(updatedTask?.toDto());
+            return Ok(new ApiResponse<TaskItem>
+            {
+                Success = true,
+                Message = "Tarea completada.",
+                Data = updatedTask
+            });
         }
 
         [HttpDelete("{id}")]
@@ -87,7 +117,11 @@ namespace TaskManagerAPI.Controllers
             if (!success)
                 return NotFound("Tarea no encontrada");
 
-            return NoContent();
+            return Ok(new ApiResponse<object>
+            {
+                Success = true,
+                Message = "Tarea eliminada correctamente"
+            });
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using TaskManagerAPI.DTOs;
-using TaskManagerAPI.Models;
+﻿using TaskManagerAPI.Models.DTOs;
+using TaskManagerAPI.Models.Entities;
 
 namespace TaskManagerAPI.Mappings
 {

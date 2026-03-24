@@ -1,4 +1,4 @@
-﻿namespace TaskManagerAPI.DTOs
+﻿namespace TaskManagerAPI.Models.DTOs
 {
     public class PaginationParams
     {

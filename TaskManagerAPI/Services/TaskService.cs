@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskManagerAPI.Data;
-using TaskManagerAPI.DTOs;
-using TaskManagerAPI.Models;
+using TaskManagerAPI.Models.DTOs;
+using TaskManagerAPI.Models.Entities;
 
 namespace TaskManagerAPI.Services
 {
@@ -18,6 +18,7 @@ namespace TaskManagerAPI.Services
         }
         public async Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(PaginationParams pagination)
         {
+
             var query = _context.Tasks.AsQueryable();
 
             if (pagination.IsCompleted.HasValue)

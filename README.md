@@ -23,7 +23,10 @@ manteniendo los datos incluso después de reiniciar la aplicación.
   - Búsqueda por título
   - Filtro por estado
   - Ordenamiento dinámico
-  
+- Manejo global de errores
+- Logging estructurado
+- Respuestas estándar en toda la API
+- Validación automática de datos de entrada
 ---
 
 ## Tecnologías
@@ -70,7 +73,60 @@ Las entidades **no se exponen directamente** a través de la API.
 ## Consultas avanzadas
 
 El endpoint `GET /api/tasks` permite controlar los resultados mediante parámetros en la URL.
+---
 
+## Formato de respuestas de la API
+
+Todas las respuestas siguen una estructura estándar.
+
+### Respuesta exitosa
+
+json
+{
+  "success": true,
+  "message": "Operación realizada correctamente",
+  "data": {}
+}
+
+### Respuesta de error
+
+json
+{
+  "success": false,
+  "message": "Ocurrió un error",
+  "data": null
+}
+---
+
+## Manejo de errores
+
+La API implementa un middleware global para capturar excepciones.
+
+En caso de error interno, se devuelve una respuesta controlada:
+
+json
+{
+  "statusCode": 500,
+  "message": "An unexpected error occurred",
+  "traceId": "..."
+}
+
+## Logging
+
+La API utiliza Serilog para el registro de eventos y errores.
+
+Los logs se almacenan en:
+
+- Consola
+- Archivos locales (`/logs`)
+
+Esto permite:
+
+- Diagnóstico de errores
+- Seguimiento de ejecución
+- Auditoría básica del sistema
+  
+---
 ### Paginación
 
 Permite dividir los resultados en páginas.
@@ -188,6 +244,10 @@ Esta consulta:
 - Validaciones implementadas
 - Swagger completamente funcional
 - Consultas avanzadas en endpoints (paginación, búsqueda, filtros y ordenamiento)
+- Manejo global de errores
+- Logging con Serilog
+- Respuestas estándar (ApiResponse)
+- Validación centralizada
 
 ---
 

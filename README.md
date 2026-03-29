@@ -27,6 +27,10 @@ manteniendo los datos incluso después de reiniciar la aplicación.
 - Logging estructurado
 - Respuestas estándar en toda la API
 - Validación automática de datos de entrada
+- Autenticación con JWT
+- Registro y login de usuarios
+- Protección de endpoints con autorización
+- Soporte multiusuario (cada usuario gestiona sus propias tareas)
 ---
 
 ## Tecnologías
@@ -96,6 +100,35 @@ json
   "message": "Ocurrió un error",
   "data": null
 }
+
+---
+
+## Autenticación
+
+La API implementa autenticación basada en JSON Web Tokens (JWT).
+
+### Endpoints de autenticación
+
+| Método | Ruta | Descripción |
+|------|------|-------------|
+| POST | /api/auth/register | Registrar un nuevo usuario |
+| POST | /api/auth/login | Iniciar sesión y obtener token |
+| GET | /api/auth/me | Obtener usuario autenticado |
+
+---
+
+### Uso del token
+
+Después de hacer login, se obtiene un token JWT:
+
+json
+{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs..."
+  }
+}
+
 ---
 
 ## Manejo de errores
@@ -197,6 +230,19 @@ Esta consulta:
 
 ---
 
+## Soporte multiusuario
+
+Cada tarea está asociada a un usuario mediante `UserId`.
+
+### Comportamiento
+
+- Al crear una tarea, se asigna automáticamente al usuario autenticado
+- Cada usuario solo puede ver sus propias tareas
+- Los datos están completamente aislados entre usuarios
+
+Esto simula un sistema real tipo gestor de tareas personal (To-Do app).
+
+---
 ## Modelo de solicitudes y respuestas
 - La API utiliza **DTOs** en lugar de exponer entidades directamente
 - Las entradas se validan mediante **Data Annotations**
@@ -206,11 +252,13 @@ Esta consulta:
 ---
 
 ## Flujo del proyecto
+
 1. El cliente realiza una petición HTTP
-2. El Controller recibe y valida el DTO
-3. El Service ejecuta la lógica de negocio
-4. El DbContext interactúa con la base de datos
-5. La API devuelve una respuesta HTTP basada en DTOs
+2. El usuario se autentica mediante JWT (si el endpoint lo requiere)
+3. El Controller recibe la solicitud
+4. El Service ejecuta la lógica de negocio
+5. El DbContext interactúa con la base de datos
+6. Se devuelve una respuesta estándar (ApiResponse)
 
 ---
 
@@ -248,7 +296,10 @@ Esta consulta:
 - Logging con Serilog
 - Respuestas estándar (ApiResponse)
 - Validación centralizada
-
+- Autenticación con JWT
+- Protección de endpoints
+- Soporte multiusuario
+  
 ---
 
 ## Próximos pasos

@@ -23,7 +23,11 @@ while keeping data persisted even after restarting the application.
   - Title search
   - Status filtering
   - Dynamic sorting
-
+- JWT authentication
+- User registration and login
+- Protected endpoints with authorization
+- Multi-user support (each user manages their own tasks)
+  
 ---
 
 ## Technologies
@@ -140,6 +144,34 @@ This query:
 - returns page 2 with 5 results
 ---
 
+## Authentication
+
+The API implements authentication using JSON Web Tokens (JWT).
+
+### Authentication endpoints
+
+| Method | Route | Description |
+|--------|------|-------------|
+| POST | /api/auth/register | Register a new user |
+| POST | /api/auth/login | Login and receive a token |
+| GET | /api/auth/me | Get authenticated user |
+
+---
+
+### Using the token
+
+After login, a JWT token is returned:
+
+json
+{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIs..."
+  }
+}
+
+---
+
 ## Request & response model
 - The API uses **DTOs** instead of exposing entities directly
 - Input is validated using **Data Annotations**
@@ -148,12 +180,28 @@ This query:
 
 ---
 
-## Project flow
+## Multi-user Support
+
+Each task is associated with a user via `UserId`.
+
+### Behavior
+
+- Tasks are automatically assigned to the authenticated user upon creation
+- Each user can only access their own tasks
+- Data is fully isolated between users
+
+This simulates a real-world task management system (To-Do app).
+
+---
+
+## Project Flow
+
 1. The client sends an HTTP request
-2. The Controller receives and validates the DTO
-3. The Service executes business logic
-4. The DbContext interacts with the database
-5. The API returns a DTO-based HTTP response
+2. The user is authenticated via JWT (if required)
+3. The Controller handles the request
+4. The Service executes business logic
+5. The DbContext interacts with the database
+6. A standardized response (ApiResponse) is returned
 
 ---
 
@@ -187,6 +235,9 @@ This query:
 - Validations implemented
 - Swagger fully operational
 - Advanced query capabilities (pagination, search, filtering and sorting)
+- JWT authentication
+- Protected endpoints
+- Multi-user support
 
 ---
 

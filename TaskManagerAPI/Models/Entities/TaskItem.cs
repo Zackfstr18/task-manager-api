@@ -17,5 +17,7 @@ namespace TaskManagerAPI.Models.Entities
         public bool IsCompleted { get; set; } = false;
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public int UserId { get; set; }
     }
 }

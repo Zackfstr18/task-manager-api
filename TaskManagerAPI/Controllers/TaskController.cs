@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TaskManagerAPI.Mappings;
 using TaskManagerAPI.Models;
@@ -21,10 +23,14 @@ namespace TaskManagerAPI.Controllers
             _service = service;
         }
         #endregion
+
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationParams pagination)
         {
-            var (items, totalCount) = await _service.GetAllAsync(pagination);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var (items, totalCount) = await _service.GetAllAsync(pagination, userId);
 
             var dtoItems = items.Select(t => t.toDto());
 
@@ -40,14 +46,17 @@ namespace TaskManagerAPI.Controllers
             return Ok(response);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(CreateTaskDto dto)
         {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var task = new TaskItem
             {
                 Title = dto.Title,
                 Description = dto.Description,
-                IsCompleted = false
+                IsCompleted = false,
+                UserId = userId
             };
 
             var createdTask = await _service.CreateAsync(task);
@@ -64,6 +73,7 @@ namespace TaskManagerAPI.Controllers
             );
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByID(int id) 
         {
@@ -86,6 +96,7 @@ namespace TaskManagerAPI.Controllers
             });
         }
 
+        [Authorize]
         [HttpPut("{id}/complete")]
         public async Task<IActionResult> CompleteTask(int id)
         {
@@ -109,6 +120,7 @@ namespace TaskManagerAPI.Controllers
             });
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(int id)
         {

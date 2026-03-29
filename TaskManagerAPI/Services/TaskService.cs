@@ -16,10 +16,10 @@ namespace TaskManagerAPI.Services
         {
             _context = context;
         }
-        public async Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(PaginationParams pagination)
+        public async Task<(List<TaskItem> Items, int TotalCount)> GetAllAsync(PaginationParams pagination, int userId)
         {
 
-            var query = _context.Tasks.AsQueryable();
+            var query = _context.Tasks.Where(t => t.UserId == userId).AsQueryable();
 
             if (pagination.IsCompleted.HasValue)
             {
